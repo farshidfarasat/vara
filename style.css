@@ -18,9 +18,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 header {
-  padding: 60px 20px;
-  background: #007bff;
-  color: white;
+  
+    background: none;  /* removes the blue background */
+  color: white;      /* keeps text visible */
+  padding: 0;        /* optional: remove extra spacing */
+  
+  
 }
 
 h1 {
