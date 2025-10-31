@@ -1,10 +1,15 @@
 body {
+  background-image: url('./public/background.webp');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: #f8f9fa; /* optional fallback colour */
   font-family: 'Vazirmatn', sans-serif;
   margin: 0;
   padding: 0;
   text-align: center;
   direction: rtl; /* right-to-left for Persian */
-  background: #f8f9fa;
   color: #333;
 }
 
