@@ -96,3 +96,20 @@ body {
     padding: 0 20px;
   }
 }
+.survey-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 100px 0;
+}
+
+.survey-container #Ff6OjJp {
+  width: 80%;
+  max-width: 900px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+}

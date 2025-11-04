@@ -29,5 +29,30 @@
     </section>
 
     <script src="script.js"></script>
+    <!-- Survey Section -->
+    <section class="survey-container">
+      <div id="Ff6OjJp" style="min-height: 480px; position: relative;">
+        <div id="porsline-loading-Ff6OjJp"
+          style="position: absolute; top: 50%; left: 50%; width: 35px; height: 35px; border: 4px solid rgba(0, 0, 0, 0.1); border-top: 4px solid #555; border-radius: 50%; animation: spin-Ff6OjJp 1s linear infinite;">
+        </div>
+        <script>
+          const styleSheet = document.createElement('style');
+          styleSheet.innerHTML = `@keyframes spin-Ff6OjJp {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }`;
+          document.head.appendChild(styleSheet);
+          const loadingIndicator = document.getElementById('porsline-loading-Ff6OjJp');
+          const script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.fetchPriority = 'high';
+          script.onload = function() {
+            loadingIndicator.style.display = 'none';
+          };
+          script.src = 'https://survey.porsline.ir/embed/eyJ3aWR0aCI6IjEwMCUiLCJoZWlnaHQiOiIxMDAlIiwiYm9yZGVyIjoibm9uZSJ9/Ff6OjJp';
+          document.getElementById('Ff6OjJp').appendChild(script);
+        </script>
+      </div>
+    </section>
   </body>
 </html>
