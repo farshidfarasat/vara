@@ -67,13 +67,14 @@ body {
 
 /* Hero */
 .hero {
-  height: 100vh;
+  min-height: 80vh; /* reduces total height */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   padding-top: 100px;
+  margin-bottom: 40px; /* small gap below hero */
 }
 
 .hero h1 {
@@ -100,7 +101,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 100px 0;
+  padding: 40px 0; /* smaller top and bottom space */
 }
 
 .survey-container #Ff6OjJp {
