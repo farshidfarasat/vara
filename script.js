@@ -164,34 +164,22 @@ async function submitOrder() {
 
 renderServices();
 renderCart();
+// ---- Fetch currency rate from Sahmeto API ----
 async function updateExchangeRate() {
   const rateInput = document.getElementById('exchangeRate');
   const rateShow = document.getElementById('rateShow');
 
-  // Check if a rate was stored today in localStorage
-  const saved = JSON.parse(localStorage.getItem('exchangeRateData') || '{}');
-  const today = new Date().toISOString().split('T')[0];
-
-  if (saved.date === today && saved.rate) {
-    // Use the saved rate
-    rateInput.value = saved.rate;
-    rateShow.textContent = new Intl.NumberFormat('fa-IR').format(saved.rate) + ' ریال / $1';
-    calcTotals();
-    return;
-  }
-
-  // Otherwise fetch new rate from API
   try {
     const res = await fetch('https://api-gateway.sahmeto.com/api/v2/core/assets/8033/price');
     const data = await res.json();
-    const rate = data?.data?.price || data?.price || 0;
+
+    // Extract the USD rate from the structure you showed
+    const rate = data?.price?.USD || 0;
 
     if (rate > 0) {
-      // Save rate for the rest of the day
-      localStorage.setItem('exchangeRateData', JSON.stringify({ rate, date: today }));
-
       rateInput.value = Math.round(rate);
-      rateShow.textContent = new Intl.NumberFormat('fa-IR').format(rate) + ' ریال / $1';
+      rateShow.textContent =
+        new Intl.NumberFormat('fa-IR').format(Math.round(rate)) + ' ریال / $1';
       calcTotals();
     } else {
       console.warn('Rate not found in API response:', data);
@@ -201,7 +189,7 @@ async function updateExchangeRate() {
   }
 }
 
-// Fetch once when the page loads
+// Call once when page loads
 updateExchangeRate();
 
 
