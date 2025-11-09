@@ -83,6 +83,7 @@ input[type="email"], input[type="number"] {
   background: var(--accent);
   color: #fff;
   transition: transform .02s ease-in;
+  font-family: Vazirmatn, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
 .btn:active { transform: translateY(1px); }
