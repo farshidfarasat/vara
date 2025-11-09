@@ -151,7 +151,7 @@ input[type="email"], input[type="number"] {
 /* Brand row: logo + text */
 .brand {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-end;/* was center */
   gap: 10px;
 }
 .brand-logo {
@@ -163,4 +163,6 @@ input[type="email"], input[type="number"] {
 .brand-text {
   font-weight: 700;
   letter-spacing: .2px;
+   line-height: 1;
+  padding-bottom: 3px; /* fine-tune vertical alignment */
 }

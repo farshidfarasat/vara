@@ -164,33 +164,65 @@ async function submitOrder() {
 
 renderServices();
 renderCart();
-// ---- Fetch currency rate from Sahmeto API ----
+
+// Initialize totals with default rate
+calcTotals();
+
+// ---- Fetch currency rate from Navasan API ----
 async function updateExchangeRate() {
   const rateInput = document.getElementById('exchangeRate');
   const rateShow = document.getElementById('rateShow');
 
+  if (!rateInput || !rateShow) {
+    console.error('Rate input or display element not found');
+    return;
+  }
+
   try {
-    const res = await fetch('https://api-gateway.sahmeto.com/api/v2/core/assets/8033/price');
+    const apiKey = 'freeKIh2IIVFjEvyt4eGu3l62IeIsyNa';
+    const apiUrl = `http://api.navasan.tech/latest/?api_key=${apiKey}`;
+    
+    const res = await fetch(apiUrl);
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
     const data = await res.json();
+    console.log('API Response:', data); // Debug log
 
-    // Extract the USD rate from the structure you showed
-    const rate = data?.price?.USD || 0;
+    // Extract usd_sell from response
+    // Navasan API typically returns: { usd_sell: { value: ..., ... }, ... }
+    let rate = 0;
+    if (data?.usd_sell?.value) {
+      rate = parseFloat(data.usd_sell.value);
+    } else if (data?.usd_sell) {
+      // If usd_sell is directly a number or string
+      rate = typeof data.usd_sell === 'number' ? data.usd_sell : parseFloat(data.usd_sell);
+    } else if (data?.usd_sell?.price) {
+      rate = parseFloat(data.usd_sell.price);
+    }
 
-    if (rate > 0) {
-      rateInput.value = Math.round(rate);
-      rateShow.textContent =
-        new Intl.NumberFormat('fa-IR').format(Math.round(rate)) + ' ریال / $1';
+    if (rate > 0 && !isNaN(rate)) {
+      const roundedRate = Math.round(rate);
+      rateInput.value = roundedRate;
+      // calcTotals() will update rateShow automatically
       calcTotals();
+      console.log('Exchange rate updated to:', roundedRate);
     } else {
-      console.warn('Rate not found in API response:', data);
+      console.warn('Rate not found in API response. Structure:', data);
+      // Don't change the display, keep showing default/manual rate
+      // calcTotals() will show the current input value
     }
   } catch (err) {
     console.error('Error fetching exchange rate:', err);
+    // Don't change the display on error - keep default/manual rate visible
+    // The default rate from HTML input will remain visible
   }
 }
 
-// Call once when page loads
-updateExchangeRate();
+// Fetch rate after a short delay to ensure DOM is ready
+setTimeout(updateExchangeRate, 100);
 
 
 
