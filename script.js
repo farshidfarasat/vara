@@ -178,47 +178,86 @@ async function updateExchangeRate() {
     return;
   }
 
-  try {
-    const apiKey = 'freeKIh2IIVFjEvyt4eGu3l62IeIsyNa';
-    const apiUrl = `http://api.navasan.tech/latest/?api_key=${apiKey}`;
-    
-    const res = await fetch(apiUrl);
-    
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-    
-    const data = await res.json();
-    console.log('API Response:', data); // Debug log
+  const apiKey = 'freeKIh2IIVFjEvyt4eGu3l62IeIsyNa';
+  
+  // Try methods in order: Netlify function (if available), HTTPS API, HTTP API
+  const apiUrls = [
+    '/.netlify/functions/fetch-rate', // Netlify serverless function proxy
+    `https://api.navasan.tech/latest/?api_key=${apiKey}`,
+    `http://api.navasan.tech/latest/?api_key=${apiKey}`
+  ];
 
-    // Extract usd_sell from response
-    // Navasan API typically returns: { usd_sell: { value: ..., ... }, ... }
-    let rate = 0;
-    if (data?.usd_sell?.value) {
-      rate = parseFloat(data.usd_sell.value);
-    } else if (data?.usd_sell) {
-      // If usd_sell is directly a number or string
-      rate = typeof data.usd_sell === 'number' ? data.usd_sell : parseFloat(data.usd_sell);
-    } else if (data?.usd_sell?.price) {
-      rate = parseFloat(data.usd_sell.price);
-    }
+  let lastError = null;
 
-    if (rate > 0 && !isNaN(rate)) {
-      const roundedRate = Math.round(rate);
-      rateInput.value = roundedRate;
-      // calcTotals() will update rateShow automatically
-      calcTotals();
-      console.log('Exchange rate updated to:', roundedRate);
-    } else {
-      console.warn('Rate not found in API response. Structure:', data);
-      // Don't change the display, keep showing default/manual rate
-      // calcTotals() will show the current input value
+  for (const apiUrl of apiUrls) {
+    try {
+      console.log('Attempting to fetch from:', apiUrl);
+      
+      // Try with credentials and proper CORS handling
+      const res = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'omit' // Don't send credentials for CORS
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      console.log('API Response:', data);
+
+      // Extract usd_sell from response
+      // Navasan API typically returns: { usd_sell: { value: ..., ... }, ... }
+      let rate = 0;
+      if (data?.usd_sell?.value) {
+        rate = parseFloat(data.usd_sell.value);
+      } else if (data?.usd_sell) {
+        // If usd_sell is directly a number or string
+        rate = typeof data.usd_sell === 'number' ? data.usd_sell : parseFloat(data.usd_sell);
+      } else if (data?.usd_sell?.price) {
+        rate = parseFloat(data.usd_sell.price);
+      }
+
+      if (rate > 0 && !isNaN(rate)) {
+        const roundedRate = Math.round(rate);
+        rateInput.value = roundedRate;
+        // calcTotals() will update rateShow automatically
+        calcTotals();
+        console.log('Exchange rate updated to:', roundedRate);
+        return; // Success, exit function
+      } else {
+        console.warn('Rate not found in API response. Structure:', data);
+        lastError = new Error('Rate not found in API response');
+      }
+    } catch (err) {
+      console.error('Error fetching from', apiUrl, ':', err);
+      lastError = err;
+      
+      // Check for specific error types
+      if (err.message && err.message.includes('Mixed Content')) {
+        console.error('Mixed Content Error: Site is HTTPS but API is HTTP. API must support HTTPS or use a server-side proxy.');
+      } else if (err.message && err.message.includes('CORS')) {
+        console.error('CORS Error: API does not allow requests from this domain. Need server-side proxy.');
+      } else if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+        console.error('Network Error: Could be CORS, mixed content, or network issue.');
+      }
+      
+      // Continue to next URL
+      continue;
     }
-  } catch (err) {
-    console.error('Error fetching exchange rate:', err);
-    // Don't change the display on error - keep default/manual rate visible
-    // The default rate from HTML input will remain visible
   }
+
+  // If we get here, all attempts failed
+  console.error('All API attempts failed. Last error:', lastError);
+  console.warn('If site is HTTPS, HTTP API calls are blocked by browsers.');
+  console.warn('Solution: Use HTTPS API, server-side proxy, or serverless function.');
+  // Keep default rate visible - don't change the display
+  // The default rate from HTML input (60000) will remain visible
 }
 
 // Fetch rate after a short delay to ensure DOM is ready
