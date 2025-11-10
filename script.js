@@ -9,12 +9,17 @@ const PRICE_PER_3M = 30;
 const N8N_WEBHOOK = "https://example.com/webhook";
 const cart = [];
 
+// fixed commission (service fee) percent
+window.serviceFeePct = 5;
+// default until API loads
+window.currentRate = 0;
+
 const fmtUSD = n => `$${(n || 0).toFixed(2)}`;
 const fmtIRR = n => new Intl.NumberFormat('fa-IR').format(Math.round(n || 0));
 
 function calcTotals() {
-  const rate = Number(document.getElementById('exchangeRate').value) || 0;
-  const feePct = Number(document.getElementById('serviceFee').value) || 0;
+  const rate = window.currentRate || 0;
+  const feePct = window.serviceFeePct || 0;
   const serviceUSD = cart.reduce((s, it) => s + it.subtotalUSD, 0);
   const feeUSD = serviceUSD * (feePct / 100);
   const grandIRR = (serviceUSD + feeUSD) * rate;
@@ -109,8 +114,8 @@ function renderServices() {
 
 async function submitOrder() {
   const email = document.getElementById('email').value.trim();
-  const rate = Number(document.getElementById('exchangeRate').value) || 0;
-  const feePct = Number(document.getElementById('serviceFee').value) || 0;
+  const rate = window.currentRate || 0;
+  const feePct = window.serviceFeePct || 0;
   const msg = document.getElementById('message');
 
   msg.style.display = 'none';
@@ -164,107 +169,35 @@ async function submitOrder() {
 
 renderServices();
 renderCart();
-
-// Initialize totals with default rate
 calcTotals();
 
-// ---- Fetch currency rate from Navasan API ----
+// ---- Fetch currency rate from Sahmeto API ----
 async function updateExchangeRate() {
-  const rateInput = document.getElementById('exchangeRate');
-  const rateShow = document.getElementById('rateShow');
+  const display = document.getElementById('exchangeRateDisplay');
 
-  if (!rateInput || !rateShow) {
-    console.error('Rate input or display element not found');
-    return;
-  }
-
-  const apiKey = 'freeKIh2IIVFjEvyt4eGu3l62IeIsyNa';
-  
-  // Try methods in order: Netlify function (if available), HTTPS API, HTTP API
-  const apiUrls = [
-    '/.netlify/functions/fetch-rate', // Netlify serverless function proxy
-    `https://api.navasan.tech/latest/?api_key=${apiKey}`,
-    `http://api.navasan.tech/latest/?api_key=${apiKey}`
-  ];
-
-  let lastError = null;
-
-  for (const apiUrl of apiUrls) {
-    try {
-      console.log('Attempting to fetch from:', apiUrl);
-      
-      // Try with credentials and proper CORS handling
-      const res = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'omit' // Don't send credentials for CORS
-      });
-      
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      
-      const data = await res.json();
-      console.log('API Response:', data);
-
-      // Extract usd_sell from response
-      // Navasan API typically returns: { usd_sell: { value: ..., ... }, ... }
-      let rate = 0;
-      if (data?.usd_sell?.value) {
-        rate = parseFloat(data.usd_sell.value);
-      } else if (data?.usd_sell) {
-        // If usd_sell is directly a number or string
-        rate = typeof data.usd_sell === 'number' ? data.usd_sell : parseFloat(data.usd_sell);
-      } else if (data?.usd_sell?.price) {
-        rate = parseFloat(data.usd_sell.price);
-      }
-
-      if (rate > 0 && !isNaN(rate)) {
-        const roundedRate = Math.round(rate);
-        rateInput.value = roundedRate;
-        // calcTotals() will update rateShow automatically
-        calcTotals();
-        console.log('Exchange rate updated to:', roundedRate);
-        return; // Success, exit function
-      } else {
-        console.warn('Rate not found in API response. Structure:', data);
-        lastError = new Error('Rate not found in API response');
-      }
-    } catch (err) {
-      console.error('Error fetching from', apiUrl, ':', err);
-      lastError = err;
-      
-      // Check for specific error types
-      if (err.message && err.message.includes('Mixed Content')) {
-        console.error('Mixed Content Error: Site is HTTPS but API is HTTP. API must support HTTPS or use a server-side proxy.');
-      } else if (err.message && err.message.includes('CORS')) {
-        console.error('CORS Error: API does not allow requests from this domain. Need server-side proxy.');
-      } else if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
-        console.error('Network Error: Could be CORS, mixed content, or network issue.');
-      }
-      
-      // Continue to next URL
-      continue;
+  try {
+    const res = await fetch("https://api-gateway.sahmeto.com/api/v2/core/assets/8033/price");
+    const data = await res.json();
+    const rate = data?.price?.USD || 0;
+    if (rate > 0) {
+      window.currentRate = Math.round(rate);
+      display.textContent = fmtIRR(window.currentRate) + ' ریال / $1';
+      calcTotals();
+      console.log('Exchange rate updated:', window.currentRate);
+    } else {
+      display.textContent = 'نامشخص';
     }
+  } catch (err) {
+    console.error('Error fetching rate:', err);
+    display.textContent = 'خطا در دریافت نرخ';
   }
-
-  // If we get here, all attempts failed
-  console.error('All API attempts failed. Last error:', lastError);
-  console.warn('If site is HTTPS, HTTP API calls are blocked by browsers.');
-  console.warn('Solution: Use HTTPS API, server-side proxy, or serverless function.');
-  // Keep default rate visible - don't change the display
-  // The default rate from HTML input (60000) will remain visible
 }
 
-// Fetch rate after a short delay to ensure DOM is ready
+// Fetch live rate after short delay
 setTimeout(updateExchangeRate, 100);
 
+// Show static commission rate
+document.getElementById('serviceFeeDisplay').textContent = window.serviceFeePct + '%';
 
-
+// Submit order listener
 document.getElementById('submitBtn').addEventListener('click', submitOrder);
-document.getElementById('exchangeRate').addEventListener('input', calcTotals);
-document.getElementById('serviceFee').addEventListener('input', calcTotals);
