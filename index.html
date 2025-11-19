@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,24 +10,27 @@
 </head>
 
 <body>
+
+  <!-- HEADER -->
   <header class="header">
     <div class="brand">
       <img src="public/Varalogo1.webp" alt="Vara" class="brand-logo" />
-      <span class="brand-text">پرداخت بین المللی</span>
+      <span class="brand-text">پرداخت بین‌المللی</span>
     </div>
     <a href="#" class="btn cta">نقد کردن درآمد ارزی</a>
   </header>
 
+  <!-- MAIN LAYOUT -->
   <main class="container">
 
-    <!-- RIGHT SIDE — Services -->
+    <!-- RIGHT: SERVICES -->
     <section class="panel" id="servicesPanel">
       <h2>خدمات</h2>
-      <div class="muted">مدت از ۳ ماه شروع می‌شود. با دکمه‌های ± تغییر دهید و سپس «افزودن به سفارش».</div>
+      <div class="muted">مدت از ۳ ماه شروع می‌شود. مدت را تغییر دهید و سپس «افزودن به سفارش» را بزنید.</div>
       <div class="grid" id="servicesGrid"></div>
     </section>
 
-    <!-- LEFT SIDE — Summary -->
+    <!-- LEFT: SUMMARY -->
     <section class="panel summary" id="summaryPanel">
       <h2>خلاصه سفارش</h2>
 
@@ -39,9 +43,10 @@
         <div class="row total"><span>جمع (IRR)</span><span id="grandIRR">0</span></div>
       </div>
 
+      <!-- FIXED FEE + EXCHANGE RATE -->
       <div class="row-2">
         <div class="field">
-          <label>نرخ ارز (IRR به ازای هر $1)</label>
+          <label>نرخ ارز (IRR به ازای $1)</label>
           <div class="readonly-box" id="exchangeRateDisplay">در حال دریافت...</div>
         </div>
 
@@ -52,8 +57,8 @@
       </div>
 
       <div class="field">
-        <label for="phone">شماره تماس شما</label>
-        <input id="phone" type="tel" placeholder="مثلاً 09123456789" pattern="[0-9+]+" />
+        <label for="phone">شماره تماس</label>
+        <input id="phone" type="tel" placeholder="مثلاً 09123456789" />
       </div>
 
       <button class="btn" id="submitBtn">ثبت سفارش</button>
@@ -64,4 +69,5 @@
 
   <script src="script.js"></script>
 </body>
+
 </html>

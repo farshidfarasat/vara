@@ -1,5 +1,9 @@
+/* -----------------------------------------
+   VARA GLOBAL – FINAL WORKING VERSION
+----------------------------------------- */
+
 const SERVICE_LIST_URL = "https://farshidfar.app.n8n.cloud/webhook/vara_global_services";
-const N8N_WEBHOOK = "https://example.com/webhook";
+const N8N_WEBHOOK = "https://farshidfar.app.n8n.cloud/webhook/vara_global_orders";
 
 window.serviceFeePct = 5;
 window.currentRate = 0;
@@ -8,49 +12,43 @@ const cart = [];
 const fmtUSD = n => `$${(n || 0).toFixed(2)}`;
 const fmtIRR = n => new Intl.NumberFormat("fa-IR").format(Math.round(n || 0));
 
-
-/* ----------- SKELETON LOADER (NO LAG) ----------- */
+/* ----------- SKELETON LOADER ----------- */
 function showSkeleton() {
   const grid = document.getElementById("servicesGrid");
   grid.innerHTML = "";
 
   for (let i = 0; i < 6; i++) {
-    const sk = document.createElement("div");
-    sk.className = "card skeleton";
-    sk.innerHTML = `
-      <div class="skeleton-line title"></div>
-      <div class="skeleton-line subtitle"></div>
-      <div class="controls">
-        <div class="skeleton-stepper"></div>
-        <div class="skeleton-btn"></div>
+    grid.innerHTML += `
+      <div class="card skeleton">
+        <div class="skeleton-line title"></div>
+        <div class="skeleton-line subtitle"></div>
+        <div class="controls">
+          <div class="skeleton-stepper"></div>
+          <div class="skeleton-btn"></div>
+        </div>
       </div>`;
-    grid.appendChild(sk);
   }
 }
 
-
-/* ----------- LOAD SERVICES ----------- */
-async function loadServices() {// 1) Check local cache (super fast)
+/* ----------- LOAD SERVICES (with cache) ----------- */
+async function loadServices() {
   const cached = localStorage.getItem("servicesCache");
   const cachedTime = localStorage.getItem("servicesCacheTime");
 
-  if (cached && cachedTime && Date.now() - cachedTime < 24*60*60*1000) {
+  if (cached && cachedTime && Date.now() - cachedTime < 24 * 60 * 60 * 1000) {
     return JSON.parse(cached);
   }
 
-  // 2) Fetch slow webhook
   const res = await fetch(SERVICE_LIST_URL);
   const data = await res.json();
 
-  // 3) Save to cache for next time
   localStorage.setItem("servicesCache", JSON.stringify(data));
   localStorage.setItem("servicesCacheTime", Date.now());
 
   return data;
 }
 
-
-/* ----------- BUILD EACH CARD ----------- */
+/* ----------- SERVICE CARD BUILDER ----------- */
 function serviceCard(service) {
   const card = document.createElement("div");
   card.className = "card";
@@ -68,6 +66,7 @@ function serviceCard(service) {
   let months = service.duration || 3;
   let amount = service.min || 0;
 
+  /* ----- Subscription type ----- */
   if (service.type === "subscription") {
     const val = document.createElement("span");
     val.textContent = `${months} ماه`;
@@ -75,16 +74,13 @@ function serviceCard(service) {
     const stepper = document.createElement("div");
     stepper.className = "stepper";
 
-    const dec = document.createElement("button");
-    const inc = document.createElement("button");
-    dec.textContent = "−";
-    inc.textContent = "+";
+    const dec = document.createElement("button"); dec.textContent = "−";
+    const inc = document.createElement("button"); inc.textContent = "+";
 
     dec.onclick = () => {
       months = Math.max(service.duration, months - service.duration);
       val.textContent = `${months} ماه`;
     };
-
     inc.onclick = () => {
       months += service.duration;
       val.textContent = `${months} ماه`;
@@ -97,14 +93,15 @@ function serviceCard(service) {
     add.textContent = "افزودن به سفارش";
 
     add.onclick = () => {
-      const blocks = months / service.duration;
-      cart.push({ name: service.name, months, subtotalUSD: service.price * blocks });
+      const subtotalUSD = (months / service.duration) * service.price;
+      cart.push({ name: service.name, months, subtotalUSD });
       renderCart();
     };
 
     controls.append(stepper, add);
   }
 
+  /* ----- API (custom USD amount) ----- */
   if (service.type === "api") {
     const input = document.createElement("input");
     input.type = "number";
@@ -117,8 +114,8 @@ function serviceCard(service) {
     };
 
     const add = document.createElement("button");
-    add.textContent = "افزودن به سفارش";
     add.className = "btn add-btn";
+    add.textContent = "افزودن به سفارش";
 
     add.onclick = () => {
       if (amount < service.min || amount > service.max) {
@@ -136,21 +133,18 @@ function serviceCard(service) {
   return card;
 }
 
-
-/* ----------- RENDER SERVICES ----------- */
+/* ----------- RENDER SERVICE LIST ----------- */
 async function renderServices() {
-  showSkeleton(); // instant no-lag UI
+  showSkeleton();
 
   const list = await loadServices();
   const grid = document.getElementById("servicesGrid");
 
-  grid.innerHTML = ""; // remove skeletons
-
+  grid.innerHTML = "";
   list.forEach(s => grid.appendChild(serviceCard(s)));
 }
 
-
-/* ----------- CART / TOTALS ----------- */
+/* ----------- CART + TOTALS ----------- */
 function calcTotals() {
   const rate = window.currentRate;
   const fee = window.serviceFeePct;
@@ -175,7 +169,6 @@ function renderCart() {
   cart.forEach((it, idx) => {
     const line = document.createElement("div");
     line.className = "line";
-
     line.innerHTML = `
       <div>
         <div class="name">${it.name}</div>
@@ -183,42 +176,41 @@ function renderCart() {
       </div>
       <button class="remove">حذف</button>
     `;
-
     line.querySelector(".remove").onclick = () => {
       cart.splice(idx, 1);
       renderCart();
     };
-
     wrap.appendChild(line);
   });
 
   calcTotals();
 }
 
-
-/* ----------- LIVE RATE ----------- */
+/* ----------- LIVE EXCHANGE RATE ----------- */
 async function updateExchangeRate() {
   const box = document.getElementById("exchangeRateDisplay");
 
   try {
-    const res = await fetch("https://api-gateway.sahmeto.com/api/v2/core/assets/8033/price");
+    const res = await fetch("https://farshidfar.app.n8n.cloud/webhook/vara_rate");
     const data = await res.json();
-    const rate = data?.price?.USD || 0;
+
+    // Your webhook returns: { "row_number": 3, "Rate": 1125000, "Date": "..." }
+    const rate = Number(data.Rate) || 0;
 
     if (rate > 0) {
       window.currentRate = Math.round(rate);
-      box.textContent = fmtIRR(window.currentRate) + " ریال / $1";
+      box.textContent = fmtIRR(window.currentRate) + " ریال ";
       calcTotals();
     } else {
       box.textContent = "نامشخص";
     }
-  } catch {
+  } catch (err) {
+    console.error("Error fetching rate from webhook", err);
     box.textContent = "خطا در دریافت نرخ";
   }
 }
 
-
-/* ----------- SUBMIT ----------- */
+/* ----------- SUBMIT ORDER TO N8N ----------- */
 async function submitOrder() {
   const phone = document.getElementById("phone").value.trim();
   const msg = document.getElementById("message");
@@ -263,7 +255,6 @@ async function submitOrder() {
   cart.length = 0;
   renderCart();
 }
-
 
 /* ----------- INIT ----------- */
 showSkeleton();
