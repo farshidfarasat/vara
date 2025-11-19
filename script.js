@@ -231,13 +231,26 @@ async function submitOrder() {
     return;
   }
 
+  const serviceUSD = cart.reduce((s, it) => s + it.subtotalUSD, 0);
+  const feeUSD = serviceUSD * (window.serviceFeePct / 100);
+  const grandIRR = (serviceUSD + feeUSD) * window.currentRate;
+
   const payload = {
-    phone,
-    items: cart,
+    order_id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+    Phone: phone,
+    telegram_sent: "FALSE",
+    order_datetime: new Date().toISOString(),
+    status: "Pending",
+    items: cart.map(item => ({
+      service_name: item.name,
+      duration_months: item.months || 0,
+      subtotal_usd: item.subtotalUSD
+    })),
     totals: {
-      serviceUSD: cart.reduce((s, it) => s + it.subtotalUSD, 0),
-      exchangeRate: window.currentRate,
-      serviceFeePercent: window.serviceFeePct
+      service_total_usd: serviceUSD,
+      service_fee_usd: feeUSD,
+      exchange_rate_irr: window.currentRate,
+      grand_total_irr: grandIRR
     },
     sheet: "Vara_orders"
   };
