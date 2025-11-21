@@ -321,3 +321,64 @@ input[type="email"] {
     opacity: 0.4;
   }
 }
+
+/* ---------------------------------------------------
+   SUPPORT BUTTONS
+--------------------------------------------------- */
+.vara-support-container {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.vara-support-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #e7e7e7;
+  /* Removed background color */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s;
+  border: none;
+  outline: none;
+  padding: 0;
+  /* Removed padding */
+  margin: 0;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+
+.vara-support-button:hover,
+.vara-support-button:focus {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  outline: none;
+}
+
+.vara-support-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Ensure image fills the button */
+  display: block;
+  border: none;
+  filter: none;
+  /* Removed filter */
+  transform: none;
+}
+
+/* Mobile adjustments */
+@media (max-width: 900px) {
+  .vara-support-container {
+    bottom: 90px;
+    left: 20px;
+  }
+}

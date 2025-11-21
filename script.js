@@ -275,4 +275,6 @@ renderServices();
 renderCart();
 updateExchangeRate();
 
+
 document.getElementById("submitBtn").onclick = submitOrder;
+
