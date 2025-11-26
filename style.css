@@ -123,9 +123,31 @@ input[type="email"] {
    TOTALS
 --------------------------------------------------- */
 
+/* ---------------------------------------------------
+   TOTALS
+--------------------------------------------------- */
+
 .totals {
   border-top: 1px solid var(--line);
-  padding-top: 8px;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.row.total {
+  font-weight: 700;
+  font-size: 16px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
 }
 
 /* ---------------------------------------------------
@@ -152,20 +174,7 @@ input[type="email"] {
   background: #fff;
 }
 
-.row-2 {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  gap: 12px;
-}
 
-.readonly-box {
-  background: #f8f9fa;
-  border: 1px solid var(--line);
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-size: 14px;
-  direction: ltr !important;
-}
 
 /* ---------------------------------------------------
    BUTTONS
@@ -265,7 +274,7 @@ input[type="email"] {
   line-height: 1;
 }
 
-.add-btn {}
+
 
 /* ---------------------------------------------------
    SKELETON

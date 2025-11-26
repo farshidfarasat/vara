@@ -155,7 +155,7 @@ function calcTotals() {
 
   document.getElementById("serviceUSD").textContent = fmtUSD(serviceUSD);
   document.getElementById("feeShow").textContent = fmtUSD(feeUSD);
-  document.getElementById("rateShow").textContent = rate ? `${fmtIRR(rate)} ریال / $1` : "—";
+  document.getElementById("rateShow").textContent = rate ? `${fmtIRR(rate)} ریال` : "—";
   document.getElementById("grandIRR").textContent = fmtIRR(grandIRR) + " ریال";
 }
 
@@ -188,8 +188,6 @@ function renderCart() {
 
 /* ----------- LIVE EXCHANGE RATE ----------- */
 async function updateExchangeRate() {
-  const box = document.getElementById("exchangeRateDisplay");
-
   try {
     const res = await fetch("https://farshidfar.app.n8n.cloud/webhook/vara_rate");
     const data = await res.json();
@@ -199,14 +197,10 @@ async function updateExchangeRate() {
 
     if (rate > 0) {
       window.currentRate = Math.round(rate);
-      box.textContent = fmtIRR(window.currentRate) + " ریال ";
       calcTotals();
-    } else {
-      box.textContent = "نامشخص";
     }
   } catch (err) {
     console.error("Error fetching rate from webhook", err);
-    box.textContent = "خطا در دریافت نرخ";
   }
 }
 
