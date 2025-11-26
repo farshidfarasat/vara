@@ -346,9 +346,9 @@ input[type="email"] {
 
 /* The clickable area – just a small square box */
 .vara-support-button {
-  width: 42px;
+  width: 59px;
   /* icon size – adjust if needed */
-  height: 42px;
+  height: 59px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
