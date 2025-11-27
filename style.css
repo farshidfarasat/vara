@@ -403,3 +403,312 @@ input[type="email"] {
   white-space: nowrap;
   border: 0;
 }
+
+/* ---------------------------------------------------
+   TAILWIND MIMIC CLASSES (for Terms Page)
+--------------------------------------------------- */
+
+/* Target container only when it has mx-auto (used in terms.html) to override grid */
+.container.mx-auto {
+  display: block;
+  grid-template-columns: none;
+  gap: 0;
+  max-width: 100%;
+  /* Reset max-width to allow media queries to handle it */
+}
+
+.container {
+  width: 100%;
+  /* Don't set margins here to avoid conflict, rely on mx-auto for terms */
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.py-12 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.md\:py-20 {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.max-w-4xl {
+  max-width: 56rem;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.p-8 {
+  padding: 2rem;
+}
+
+.md\:p-12 {
+  padding: 3rem;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-12 {
+  margin-bottom: 3rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-gray-900 {
+  color: #111827;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.text-gray-700 {
+  color: #374151;
+}
+
+.prose {
+  max-width: 65ch;
+  color: #374151;
+}
+
+.prose-lg {
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+.max-w-none {
+  max-width: none;
+}
+
+.prose h3 {
+  color: #111827;
+  font-weight: 600;
+  font-size: 1.5em;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.3333333;
+}
+
+.prose p {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+
+.prose ul {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  list-style-type: disc;
+  padding-right: 1.625em;
+}
+
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------
+   TERMS PAGE STYLES
+--------------------------------------------------- */
+
+.terms-document {
+  max-width: 850px;
+  /* Reduced for frame look */
+  width: 100%;
+  margin: 40px auto;
+  /* Added top/bottom margin */
+  padding: 60px;
+  /* More breathing room */
+  background: #fff;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  /* Soft shadow for depth */
+  border-radius: 4px;
+  /* Slight rounding */
+}
+
+.terms-header {
+  display: flex;
+  justify-content: flex-end;
+  /* Align title to right */
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+.terms-title-group {
+  text-align: right;
+}
+
+.terms-title-group h1 {
+  font-size: 32px;
+  font-weight: 900;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.terms-date {
+  font-size: 14px;
+  color: #666;
+  font-weight: 400;
+}
+
+/* Removed .terms-brand-large */
+
+.terms-content h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #000;
+  padding-bottom: 16px;
+  text-align: right;
+}
+
+.terms-content p {
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 24px;
+  text-align: justify;
+  color: #111;
+}
+
+.terms-content ul {
+  list-style: none;
+  padding-right: 20px;
+  margin-bottom: 24px;
+}
+
+.terms-content li {
+  position: relative;
+  margin-bottom: 16px;
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+.terms-content li::before {
+  content: "•";
+  position: absolute;
+  right: -20px;
+  color: #000;
+  font-weight: bold;
+}
+
+.terms-content .note {
+  font-size: 13px;
+  color: #555;
+  margin-top: 4px;
+  display: block;
+}
+
+.terms-content .sub-list {
+  margin-top: 8px;
+  padding-right: 20px;
+}
+
+.terms-content .sub-list li::before {
+  content: "◦";
+  /* Hollow bullet for sub-list */
+  font-weight: normal;
+}
+
+.terms-content .small-note {
+  font-size: 13px;
+  color: #444;
+  margin-top: 32px;
+  margin-bottom: 32px;
+  text-align: justify;
+}
+
+.terms-content a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .terms-header {
+    flex-direction: column-reverse;
+    /* Stack vertically on mobile */
+    align-items: flex-end;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .terms-brand-large {
+    font-size: 60px;
+  }
+
+  .terms-document {
+    padding: 20px;
+  }
+
+  .text-4xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  /* Smaller title on mobile */
+  .p-8 {
+    padding: 1.5rem;
+  }
+}
