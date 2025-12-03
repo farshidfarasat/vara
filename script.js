@@ -1,5 +1,5 @@
 /* -----------------------------------------
-   VARA GLOBAL – FINAL WORKING VERSION
+   VARA GLOBAL – FINAL SMART REFRESH VERSION
 ----------------------------------------- */
 
 const SERVICE_LIST_URL = "https://farshidfar.app.n8n.cloud/webhook/vara_global_services";
@@ -30,20 +30,28 @@ function showSkeleton() {
   }
 }
 
-/* ----------- LOAD SERVICES (with cache) ----------- */
-async function loadServices() {
-  const cached = localStorage.getItem("servicesCache");
-  const cachedTime = localStorage.getItem("servicesCacheTime");
+/* ----------- LOAD SERVICES (SMART REFRESH) ----------- */
+async function loadServices(forceRefresh = false) {
+  const cacheKey = "servicesCache";
+  const cacheTimeKey = "servicesCacheTime";
 
-  if (cached && cachedTime && Date.now() - cachedTime < 24 * 60 * 60 * 1000) {
+  const cached = localStorage.getItem(cacheKey);
+  const cachedTime = localStorage.getItem(cacheTimeKey);
+
+  // Use cache if not forcing and <24h old
+  if (!forceRefresh && cached && cachedTime &&
+    Date.now() - cachedTime < 24 * 60 * 60 * 1000) {
     return JSON.parse(cached);
   }
 
-  const res = await fetch(SERVICE_LIST_URL);
+  // Cache buster prevents browser/CDN caching
+  const url = SERVICE_LIST_URL + "?v=" + Date.now();
+  const res = await fetch(url, { cache: "no-store" });
   const data = await res.json();
 
-  localStorage.setItem("servicesCache", JSON.stringify(data));
-  localStorage.setItem("servicesCacheTime", Date.now());
+  // Save cache
+  localStorage.setItem(cacheKey, JSON.stringify(data));
+  localStorage.setItem(cacheTimeKey, Date.now());
 
   return data;
 }
@@ -66,7 +74,7 @@ function serviceCard(service) {
   let months = service.duration || 3;
   let amount = service.min || 0;
 
-  /* ----- Subscription type ----- */
+  /* ----- Subscription ----- */
   if (service.type === "subscription") {
     const val = document.createElement("span");
     val.textContent = `${months} ماه`;
@@ -101,7 +109,7 @@ function serviceCard(service) {
     controls.append(stepper, add);
   }
 
-  /* ----- API (custom USD amount) ----- */
+  /* ----- API type ----- */
   if (service.type === "api") {
     const input = document.createElement("input");
     input.type = "number";
@@ -134,10 +142,9 @@ function serviceCard(service) {
 }
 
 /* ----------- RENDER SERVICE LIST ----------- */
-async function renderServices() {
+async function renderServices(forceRefresh = false) {
   showSkeleton();
-
-  const list = await loadServices();
+  const list = await loadServices(forceRefresh);
   const grid = document.getElementById("servicesGrid");
 
   grid.innerHTML = "";
@@ -189,22 +196,22 @@ function renderCart() {
 /* ----------- LIVE EXCHANGE RATE ----------- */
 async function updateExchangeRate() {
   try {
-    const res = await fetch("https://farshidfar.app.n8n.cloud/webhook/vara_rate");
+    const res = await fetch("https://farshidfar.app.n8n.cloud/webhook/vara_rate?v=" + Date.now(), {
+      cache: "no-store"
+    });
     const data = await res.json();
 
-    // Your webhook returns: { "row_number": 3, "Rate": 1125000, "Date": "..." }
     const rate = Number(data.Rate) || 0;
-
     if (rate > 0) {
       window.currentRate = Math.round(rate);
       calcTotals();
     }
   } catch (err) {
-    console.error("Error fetching rate from webhook", err);
+    console.error("Error fetching rate", err);
   }
 }
 
-/* ----------- SUBMIT ORDER TO N8N ----------- */
+/* ----------- SUBMIT ORDER ----------- */
 async function submitOrder() {
   const phone = document.getElementById("phone").value.trim();
   const msg = document.getElementById("message");
@@ -251,7 +258,11 @@ async function submitOrder() {
 
   await fetch(N8N_WEBHOOK, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type":
+
+        "application/json"
+    },
     body: JSON.stringify(payload)
   });
 
@@ -263,12 +274,15 @@ async function submitOrder() {
   renderCart();
 }
 
-/* ----------- INIT ----------- */
+/* ----------- INIT (SMART REFRESH) ----------- */
+
+// Check if URL contains ?refresh=1
+const urlParams = new URLSearchParams(window.location.search);
+const forceRefresh = urlParams.get("refresh") === "1";
+
 showSkeleton();
-renderServices();
+renderServices(forceRefresh);
 renderCart();
 updateExchangeRate();
 
-
 document.getElementById("submitBtn").onclick = submitOrder;
-
