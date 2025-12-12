@@ -199,7 +199,7 @@ input[type="email"] {
 --------------------------------------------------- */
 
 .header {
-  max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
   padding: 16px;
   display: flex;
@@ -423,25 +423,33 @@ input[type="email"] {
 }
 
 @media (min-width: 640px) {
-  .container {
+
+  .container,
+  .header {
     max-width: 640px;
   }
 }
 
 @media (min-width: 768px) {
-  .container {
+
+  .container,
+  .header {
     max-width: 768px;
   }
 }
 
 @media (min-width: 1024px) {
-  .container {
+
+  .container,
+  .header {
     max-width: 1024px;
   }
 }
 
 @media (min-width: 1280px) {
-  .container {
+
+  .container,
+  .header {
     max-width: 1280px;
   }
 }
