@@ -30,30 +30,68 @@ function showSkeleton() {
   }
 }
 
-/* ----------- LOAD SERVICES (SMART REFRESH) ----------- */
-async function loadServices(forceRefresh = false) {
+/* ----------- RENDER GRID HELPER ----------- */
+function renderGrid(list) {
+  const grid = document.getElementById("servicesGrid");
+  grid.innerHTML = "";
+  list.forEach(s => grid.appendChild(serviceCard(s)));
+}
+
+/* ----------- LOAD & RENDER SERVICES (STALE-WHILE-REVALIDATE) ----------- */
+async function renderServices(forceRefresh = false) {
   const cacheKey = "servicesCache";
   const cacheTimeKey = "servicesCacheTime";
+  const STALE_TIME = 2 * 60 * 60 * 1000; // 2 hours
 
   const cached = localStorage.getItem(cacheKey);
-  const cachedTime = localStorage.getItem(cacheTimeKey);
+  const cachedTime = Number(localStorage.getItem(cacheTimeKey)) || 0;
+  const now = Date.now();
 
-  // Use cache if not forcing and <24h old
-  if (!forceRefresh && cached && cachedTime &&
-    Date.now() - cachedTime < 24 * 60 * 60 * 1000) {
-    return JSON.parse(cached);
+  let hasRendered = false;
+
+  // 1. Immediate Render from Cache
+  if (cached) {
+    try {
+      const data = JSON.parse(cached);
+      if (Array.isArray(data)) {
+        renderGrid(data);
+        hasRendered = true;
+      }
+    } catch (e) {
+      console.error("Cache parse error", e);
+    }
   }
 
-  // Cache buster prevents browser/CDN caching
-  const url = SERVICE_LIST_URL + "?v=" + Date.now();
-  const res = await fetch(url, { cache: "no-store" });
-  const data = await res.json();
+  // 2. Decide if we need to fetch
+  // Fetch if: forceRefresh is true OR no cache OR cache is stale
+  const isStale = (now - cachedTime) > STALE_TIME;
+  const shouldFetch = forceRefresh || !hasRendered || isStale;
 
-  // Save cache
-  localStorage.setItem(cacheKey, JSON.stringify(data));
-  localStorage.setItem(cacheTimeKey, Date.now());
+  if (!shouldFetch) return;
 
-  return data;
+  // 3. Fetch in background (or foreground if nothing rendered)
+  if (!hasRendered) showSkeleton();
+
+  try {
+    const url = SERVICE_LIST_URL + "?v=" + now; // Cache buster
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error("Network response was not ok");
+    const data = await res.json();
+
+    // Update Cache
+    localStorage.setItem(cacheKey, JSON.stringify(data));
+    localStorage.setItem(cacheTimeKey, now);
+
+    // Update UI
+    renderGrid(data);
+  } catch (err) {
+    console.error("Fetch error:", err);
+    // Only show error to user if we have nothing on screen
+    if (!hasRendered) {
+      document.getElementById("servicesGrid").innerHTML =
+        `<div class="error">خطا در دریافت لیست سرویس‌ها. لطفا دوباره تلاش کنید.</div>`;
+    }
+  }
 }
 
 /* ----------- SERVICE CARD BUILDER ----------- */
@@ -141,15 +179,7 @@ function serviceCard(service) {
   return card;
 }
 
-/* ----------- RENDER SERVICE LIST ----------- */
-async function renderServices(forceRefresh = false) {
-  showSkeleton();
-  const list = await loadServices(forceRefresh);
-  const grid = document.getElementById("servicesGrid");
 
-  grid.innerHTML = "";
-  list.forEach(s => grid.appendChild(serviceCard(s)));
-}
 
 /* ----------- CART + TOTALS ----------- */
 function calcTotals() {
