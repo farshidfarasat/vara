@@ -561,6 +561,28 @@ input[type="email"] {
   padding-right: 1.625em;
 }
 
+/* Remove default list style for list-none */
+.prose ul.list-none {
+  list-style-type: none;
+  padding-right: 0;
+}
+
+.prose .list-none li {
+  list-style: none;
+  position: relative;
+}
+
+.prose .list-none li::before {
+  content: "•";
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #111827;
+  font-weight: 900;
+  font-size: 1.2em;
+  line-height: 1.75;
+}
+
 .prose li {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
@@ -699,7 +721,9 @@ input[type="email"] {
   right: 0;
   top: 0;
   color: #111827;
-  font-weight: bold;
+  font-weight: 900;
+  font-size: 1.2em;
+  line-height: 1.75;
 }
 
 .space-y-2 > * + * {
