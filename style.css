@@ -688,6 +688,20 @@ input[type="email"] {
   list-style: none;
 }
 
+/* Bullet points for list items */
+.list-none li {
+  position: relative;
+}
+
+.list-none li::before {
+  content: "•";
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #111827;
+  font-weight: bold;
+}
+
 .space-y-2 > * + * {
   margin-top: 0.5rem;
 }
