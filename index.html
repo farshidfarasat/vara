@@ -6,15 +6,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-918ZMTWD45"></script>
+  <!-- Google tag (gtag.js) – deferred to avoid cache/blocking -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
+    window.addEventListener("load", function () {
+      const s = document.createElement("script");
+      s.src = "https://www.googletagmanager.com/gtag/js?id=G-918ZMTWD45";
+      s.async = true;
+      document.head.appendChild(s);
 
-    gtag('config', 'G-918ZMTWD45');
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-918ZMTWD45');
+    });
   </script>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="canonical" href="https://vara.global/" />
@@ -26,28 +32,26 @@
   <link rel="icon" type="image/png" sizes="32x32" href="public/favicon-32x32.png">
   <link rel="icon" href="public/favicon.ico">
 
-
-
-  <!-- Google Fonts (Non-blocking) -->
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap" rel="stylesheet"
-    media="print" onload="this.media='all'" />
+  <!-- Google Fonts (Non-blocking – unchanged) -->
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'" />
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap"
-      rel="stylesheet" />
+          rel="stylesheet" />
   </noscript>
 
   <title>پرداخت ارزی، خرید سرویس خارجی و نقد کردن درآمد ارزی | Vara</title>
   <meta name="description"
-    content="وَرا پلتفرمی برای پرداخت ارزی، خرید سرویس‌های هوش مصنوعی و سرویس‌های بین‌المللی است که برای کسب‌وکارها ساخته شده. امکان نقد کردن درآمد ارزی با کارمزد پایین و پردازش سریع." />
+        content="وَرا پلتفرمی برای پرداخت ارزی، خرید سرویس‌های هوش مصنوعی و سرویس‌های بین‌المللی است که برای کسب‌وکارها ساخته شده. امکان نقد کردن درآمد ارزی با کارمزد پایین و پردازش سریع." />
   <meta name="keywords"
-    content="وَرا, پرداخت ارزی, خرید سرویس‌های هوش مصنوعی, خرید سرویس‌های خارجی, نقد کردن درآمد ارزی, Google Banana, Gemini AI Pro, Gemini AI Ultra, Google AI Studio, OpenAI API, ChatGPT Plus, ChatGPT Business, ChatGPT Pro, Cursor, Midjourney, Deepseek API, سرویس‌های AI, اکانت هوش مصنوعی, خرید اشتراک AI" />
+        content="وَرا, پرداخت ارزی, خرید سرویس‌های هوش مصنوعی, خرید سرویس‌های خارجی, نقد کردن درآمد ارزی, Google Banana, Gemini AI Pro, Gemini AI Ultra, Google AI Studio, OpenAI API, ChatGPT Plus, ChatGPT Business, ChatGPT Pro, Cursor, Midjourney, Deepseek API, سرویس‌های AI, اکانت هوش مصنوعی, خرید اشتراک AI" />
 
-  <!-- Open Graph / Facebook -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://vara.global/" />
   <meta property="og:title" content="پرداخت ارزی، خرید سرویس خارجی و نقد کردن درآمد ارزی | Vara" />
   <meta property="og:description"
-    content="وَرا پلتفرمی برای پرداخت ارزی، خرید سرویس‌های هوش مصنوعی و سرویس‌های بین‌المللی است که برای کسب‌وکارها ساخته شده. امکان نقد کردن درآمد ارزی با کارمزد پایین و پردازش سریع." />
+        content="وَرا پلتفرمی برای پرداخت ارزی، خرید سرویس‌های هوش مصنوعی و سرویس‌های بین‌المللی است که برای کسب‌وکارها ساخته شده. امکان نقد کردن درآمد ارزی با کارمزد پایین و پردازش سریع." />
   <meta property="og:image" content="https://vara.global/public/VaraOG.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -58,13 +62,14 @@
   <meta name="twitter:url" content="https://vara.global/" />
   <meta name="twitter:title" content="پرداخت ارزی، خرید سرویس خارجی و نقد کردن درآمد ارزی | Vara" />
   <meta name="twitter:description"
-    content="وَرا پلتفرمی برای پرداخت ارزی، خرید سرویس‌های هوش مصنوعی و سرویس‌های بین‌المللی است که برای کسب‌وکارها ساخته شده. امکان نقد کردن درآمد ارزی با کارمزد پایین و پردازش سریع." />
+        content="وَرا پلتفرمی برای پرداخت ارزی، خرید سرویس‌های هوش مصنوعی و سرویس‌های بین‌المللی است که برای کسب‌وکارها ساخته شده. امکان نقد کردن درآمد ارزی با کارمزد پایین و پردازش سریع." />
   <meta name="twitter:image" content="https://vara.global/public/VaraOG.png" />
 
-  <!-- Main CSS (Non-blocking) -->
-  <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'" />
+  <!-- Main CSS (cache fixed via versioning) -->
+  <link rel="stylesheet" href="style.css?v=20260106"
+        media="print" onload="this.media='all'" />
   <noscript>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=20260106" />
   </noscript>
 </head>
 
@@ -80,70 +85,58 @@
     <a href="https://t.me/vara_global" class="btn cta">نقد کردن درآمد ارزی</a>
   </header>
 
-  <!-- MAIN LAYOUT -->
+  <!-- MAIN -->
   <main class="container">
-
-    <!-- RIGHT: SERVICES -->
     <section class="panel" id="servicesPanel">
       <h2>خدمات</h2>
-      <div class="muted">خدمات پرداخت ارزی و خرید سرویس‌های هوش مصنوعی. سرویس مورد نظر را انتخاب کنید و سفارش را ثبت
-        کنید.
-        <br>
-        کارمزد خدمات <b>5 درصد</b>.
+      <div class="muted">
+        خدمات پرداخت ارزی و خرید سرویس‌های هوش مصنوعی.
+        <br>کارمزد خدمات <b>5 درصد</b>.
       </div>
       <div class="grid" id="servicesGrid"></div>
     </section>
 
-    <!-- LEFT: SUMMARY -->
     <section class="panel summary" id="summaryPanel">
       <h2>خلاصه سفارش</h2>
-
       <div id="items"></div>
 
       <div class="totals">
         <div class="row"><span>هزینه سرویس (USD)</span><strong id="serviceUSD">$0.00</strong></div>
         <div class="row"><span>نرخ ارز (دلار)</span><span id="rateShow">—</span></div>
-        <div class="row"><span>هزینه خدمات <b></b>(5%)</b></span><span id="feeShow">$0.00</span></div>
+        <div class="row"><span>هزینه خدمات (5%)</span><span id="feeShow">$0.00</span></div>
         <div class="row total"><span>جمع (IRR)</span><span id="grandIRR">0</span></div>
       </div>
-
-      <!-- FIXED FEE + EXCHANGE RATE -->
-
 
       <div class="field">
         <label for="phone">شماره تماس</label>
         <input id="phone" type="tel" placeholder="مثلاً 09123456789" />
       </div>
 
-      <button class="btn" id="submitBtn">ثبت سفارش پرداخت ارزی
-      </button>
-      <div style="font-size: 12px; color: var(--muted); margin-top: 8px; text-align: center;">
+      <button class="btn" id="submitBtn">ثبت سفارش پرداخت ارزی</button>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center;">
         ثبت سفارش به معنی موافقت با شرایط خدمات است.
         <br>
-        <a href="https://vara.global/terms" target="_blank" style="color: inherit; text-decoration: underline;">[مشاهده
-          شرایط خدمات]</a>
+        <a href="https://vara.global/terms" target="_blank"
+           style="color:inherit;text-decoration:underline;">[مشاهده شرایط خدمات]</a>
       </div>
       <div class="notice" id="message" style="display:none"></div>
     </section>
-
   </main>
 
-  <!-- FOOTER -->
-  <footer style="text-align: center; padding: 20px; font-size: 14px; color: var(--muted);">
-    <a href="/terms.html" style="color: inherit; text-decoration: none;">شرایط و قوانین</a>
+  <footer style="text-align:center;padding:20px;font-size:14px;color:var(--muted);">
+    <a href="/terms.html" style="color:inherit;text-decoration:none;">شرایط و قوانین</a>
   </footer>
 
-  <!-- SUPPORT BUTTONS -->
   <div class="vara-support-container">
-    <a href="https://t.me/vara_global" target="_blank" class="vara-support-button" aria-label="Telegram">
-      <img src="public/telegrampng.png" alt="پشتیبانی ورا در تلگرام" class="vara-support-icon" width="53" height="53" />
+    <a href="https://t.me/vara_global" target="_blank" class="vara-support-button">
+      <img src="public/telegrampng.png" width="53" height="53" />
     </a>
-    <a href="https://wa.me/qr/RGRW5DNNJLTLI1" target="_blank" class="vara-support-button" aria-label="WhatsApp">
-      <img src="public/whatsapppng.png" alt="پشتیبانی ورا در واتساپ" class="vara-support-icon" width="53" height="53" />
+    <a href="https://wa.me/qr/RGRW5DNNJLTLI1" target="_blank" class="vara-support-button">
+      <img src="public/whatsapppng.png" width="53" height="53" />
     </a>
   </div>
 
-  <script src="script.js" defer></script>
+  <!-- Main JS (cache fixed via versioning) -->
+  <script src="script.js?v=20260106" defer></script>
 </body>
-
 </html>

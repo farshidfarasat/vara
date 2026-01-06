@@ -37,11 +37,11 @@ function renderGrid(list) {
   list.forEach(s => grid.appendChild(serviceCard(s)));
 }
 
-/* ----------- LOAD & RENDER SERVICES (STALE-WHILE-REVALIDATE) ----------- */
+/* ----------- LOAD & RENDER SERVICES (CACHE FIXED) ----------- */
 async function renderServices(forceRefresh = false) {
   const cacheKey = "servicesCache";
   const cacheTimeKey = "servicesCacheTime";
-  const STALE_TIME = 2 * 60 * 60 * 1000; // 2 hours
+  const STALE_TIME = 30 * 60 * 1000; // ⬅️ was 2h → now 30min
 
   const cached = localStorage.getItem(cacheKey);
   const cachedTime = Number(localStorage.getItem(cacheTimeKey)) || 0;
@@ -49,7 +49,7 @@ async function renderServices(forceRefresh = false) {
 
   let hasRendered = false;
 
-  // 1. Immediate Render from Cache
+  // 1. Immediate render from cache
   if (cached) {
     try {
       const data = JSON.parse(cached);
@@ -62,31 +62,27 @@ async function renderServices(forceRefresh = false) {
     }
   }
 
-  // 2. Decide if we need to fetch
-  // Fetch if: forceRefresh is true OR no cache OR cache is stale
+  // 2. Decide if fetch is needed
   const isStale = (now - cachedTime) > STALE_TIME;
   const shouldFetch = forceRefresh || !hasRendered || isStale;
 
   if (!shouldFetch) return;
 
-  // 3. Fetch in background (or foreground if nothing rendered)
+  // ⬅️ Skeleton فقط اگر چیزی روی صفحه نداریم
   if (!hasRendered) showSkeleton();
 
   try {
-    const url = SERVICE_LIST_URL + "?v=" + now; // Cache buster
+    const url = SERVICE_LIST_URL + "?v=" + now; // cache buster
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error("Network response was not ok");
     const data = await res.json();
 
-    // Update Cache
     localStorage.setItem(cacheKey, JSON.stringify(data));
     localStorage.setItem(cacheTimeKey, now);
 
-    // Update UI
     renderGrid(data);
   } catch (err) {
     console.error("Fetch error:", err);
-    // Only show error to user if we have nothing on screen
     if (!hasRendered) {
       document.getElementById("servicesGrid").innerHTML =
         `<div class="error">خطا در دریافت لیست سرویس‌ها. لطفا دوباره تلاش کنید.</div>`;
@@ -112,7 +108,6 @@ function serviceCard(service) {
   let months = service.duration || 3;
   let amount = service.min || 0;
 
-  /* ----- Subscription ----- */
   if (service.type === "subscription") {
     const val = document.createElement("span");
     val.textContent = `${months} ماه`;
@@ -147,7 +142,6 @@ function serviceCard(service) {
     controls.append(stepper, add);
   }
 
-  /* ----- API type ----- */
   if (service.type === "api") {
     const input = document.createElement("input");
     input.type = "number";
@@ -178,8 +172,6 @@ function serviceCard(service) {
   card.append(title, note, controls);
   return card;
 }
-
-
 
 /* ----------- CART + TOTALS ----------- */
 function calcTotals() {
@@ -226,9 +218,10 @@ function renderCart() {
 /* ----------- LIVE EXCHANGE RATE ----------- */
 async function updateExchangeRate() {
   try {
-    const res = await fetch("https://n8n-5lcpbbfq.darkube.app/webhook/vara_rate?v=" + Date.now(), {
-      cache: "no-store"
-    });
+    const res = await fetch(
+      "https://n8n-5lcpbbfq.darkube.app/webhook/vara_rate?v=" + Date.now(),
+      { cache: "no-store" }
+    );
     const data = await res.json();
 
     const rate = Number(data.Rate) || 0;
@@ -288,11 +281,7 @@ async function submitOrder() {
 
   await fetch(N8N_WEBHOOK, {
     method: "POST",
-    headers: {
-      "Content-Type":
-
-        "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   });
 
@@ -304,13 +293,10 @@ async function submitOrder() {
   renderCart();
 }
 
-/* ----------- INIT (SMART REFRESH) ----------- */
-
-// Check if URL contains ?refresh=1
+/* ----------- INIT ----------- */
 const urlParams = new URLSearchParams(window.location.search);
 const forceRefresh = urlParams.get("refresh") === "1";
 
-showSkeleton();
 renderServices(forceRefresh);
 renderCart();
 updateExchangeRate();
