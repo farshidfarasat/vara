@@ -2,8 +2,8 @@
    VARA GLOBAL – FINAL SMART REFRESH VERSION
 ----------------------------------------- */
 
-const SERVICE_LIST_URL = "https://farshidfar.app.n8n.cloud/webhook/vara_global_services";
-const N8N_WEBHOOK = "https://farshidfar.app.n8n.cloud/webhook/vara_global_orders";
+const SERVICE_LIST_URL = "https://n8n-5lcpbbfq.darkube.app/webhook/vara_global_services";
+const N8N_WEBHOOK = "https://n8n-5lcpbbfq.darkube.app/webhook/vara_global_orders";
 
 window.serviceFeePct = 5;
 window.currentRate = 0;
