@@ -226,7 +226,7 @@ function renderCart() {
 /* ----------- LIVE EXCHANGE RATE ----------- */
 async function updateExchangeRate() {
   try {
-    const res = await fetch("https://farshidfar.app.n8n.cloud/webhook/vara_rate?v=" + Date.now(), {
+    const res = await fetch("https://n8n-5lcpbbfq.darkube.app/webhook/vara_rate?v=" + Date.now(), {
       cache: "no-store"
     });
     const data = await res.json();
